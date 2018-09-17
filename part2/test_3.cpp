@@ -37,15 +37,44 @@ bool my_find(std::vector<std::vector<int>> &array, int value){
 	int rows = 0;
 	int column = b_size - 1;
 	while(rows < a_size && column >= 0){
-		if(array[rows*column][column] == value){
+		if(array[rows][column] == value){
 			return true;
 		}
-		else if(array[rows*column][column] > value){
+		else if(array[rows][column] > value){
 			--column;
 		}
 		else{
 			rows++;
 		}
+	}
+	return false;
+}
+
+/*用迭代器进行操作
+ *	对于相关的迭代器的使用, 和其中的定义操作熟悉.
+ * */
+template<typename T>
+bool iterator_my_find(std::vector<std::vector<T>> &array, T value){
+	typename std::vector<std::vector<T>>::iterator it = array.begin();
+	typename std::vector<T>::iterator it_point = it->end() - 1;
+	while(it_point != it->begin() && it != array.end()){
+		if(*it_point == value){
+			return true;
+		}
+		else if(*it_point > value){
+			it_point--;
+		}
+		else{
+			int size = it_point - it->begin();
+			it++;
+			if(it == array.end()){
+				break;
+			}
+			it_point = it->begin() + size;
+		}
+	}
+	if(*it_point == value){
+		return true;
 	}
 	return false;
 }
@@ -60,10 +89,11 @@ int main(){
 	print_array(array_double);
 	int elem = 0;
 	while(std::cin >> elem){
-		bool flag = my_find(array_double, elem);
+		bool flag = iterator_my_find(array_double, elem);
 		std::cout << "look for " << elem << " " << flag << std::endl;
 		elem = 0;
 	}
-
+	
+	//iterator_my_find(array_double, 5);
 	return 0;
 }
