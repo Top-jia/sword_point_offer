@@ -105,15 +105,15 @@ void DeleteNode(LNode **pHead, LNode *deleteNode){
 
 LNode* FindKthToTail(LNode *pHead, unsigned int k){
 	LNode *kRPtr = NULL;
-	if(NULL != pHead){
+	if(NULL != pHead && k > 0){
 		LNode *m_kRPtr = pHead;
-		for(int i = 0; i < k && m_kRPtr != NULL; i++){
+		for(int i = 0; i < k - 1 && m_kRPtr != NULL; i++){
 			m_kRPtr = m_kRPtr->m_pNext;
 		}
 
 		if(m_kRPtr != NULL){
 			kRPtr = pHead;
-			while(m_kRPtr != NULL){
+			while(m_kRPtr->m_pNext != NULL){
 				m_kRPtr = m_kRPtr->m_pNext;
 				kRPtr   = kRPtr->m_pNext;
 			}
@@ -127,17 +127,22 @@ LNode* ReverseList(LNode **pHead){
 		return *pHead;
 	}
 
-	LNode *mNode = *pHead;
 	LNode *mNodeBack = *pHead;
 	LNode *mNodeFront = NULL;
-	while(NULL != mNode){
-		LNode *mNext = mNodeBack->m_pNext;
-		if(NULL == mNext){
+	while(NULL != mNodeBack){
+		LNode *mNode = mNodeBack->m_pNext;
+		if(NULL == mNode){
 			*pHead 	= mNodeBack;
+			mNodeBack->m_pNext = mNodeFront;
+		}else if (*pHead == mNodeBack){		
+			mNodeBack = mNodeBack->m_pNext;
+			mNode->m_pNext = *pHead;
+			mNodeFront = mNode;
+		}else{
+			mNodeBack = mNodeBack->m_pNext;
+			mNode->m_pNext = mNodeFront;
+			mNodeFront = mNode;
 		}
-		mNodeBack->m_pNext = mNodeFront;
-		mNode = mNext;
-		mNodeFront = mNodeBack;		
 	}
 	return *pHead;
 }
@@ -155,13 +160,24 @@ void FreeNode(LNode **pHead){
 }
 
 int main(){
+	
 	LNode *head = NULL;
-	for(int i = 0; i < 7; i++){
+	for(int i = 0; i < 3; i++){
 		AddTail(&head, i);
 	}
+	
+	LNode *kNode = FindKthToTail(head, 0);
+	if(NULL == kNode){
+		std::cout << "kNode: NULL" << std::endl;
+	}else{
+		std::cout << "kNode value: " << kNode->m_nKey << std::endl;
+	}
+	ReverseList(&head);
+	DeleteNode(&head, NULL);
 	PrintListReversingly(head);
-	DeleteNode(&head, head->m_pNext);
-	PrintListReversingly1(head);
+	
+	//DeleteNode(&head, head->m_pNext);
+	//PrintListReversingly1(head);
 	FreeNode(&head);
 	return 0;
 }
